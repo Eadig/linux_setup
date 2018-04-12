@@ -1,3 +1,6 @@
+alias ll="ls -l"
+alias la="ls -la"
+ 
 function checkretval() {
   # This function checks the return value of the last shell command.
   # It adjusts the color green==good==0 or red otherwise.
