@@ -1,0 +1,92 @@
+git-interactive-change-branch() {
+  local branches branch
+  branches=$(git branch) &&
+    branch=$(echo "$branches" | fzf --height 20% +s +m) &&
+    git checkout $(echo "$branch" | sed "s/.* //")
+}
+
+git-interactive-checkout-commit() {
+  local commits commit
+  commits=$(git log --pretty=oneline --abbrev-commit --reverse) &&
+    commit=$(echo "$commits" | fzf +s +m -e) &&
+    git checkout $(echo "$commit" | sed "s/ .*//")
+}
+
+function gri() {
+  git rebase --interactive head~${1}
+}
+
+function gdh() {
+  git diff ${1}^!
+}
+
+alias gicb=git-interactive-change-branch
+alias gicc=git-interactive-checkout-commit
+
+#General Git Alias'.
+alias gg="git grep"
+#alias gpull="git pull upstream master"
+#alias gpullr="git pull --rebase upstream master"
+alias gpush="git push origin HEAD"
+# alias gcm="git checkout master"
+alias gcam="git commit -S -am"
+alias gb="git branch"
+alias gbd="git branch -D"
+alias gbda="git branch | grep -v \"master\" | xargs git branch -D"
+alias gane="git commit --amend --no-edit"
+alias gpfwl="git push --force-with-lease origin HEAD"
+alias gsearch="git log -S"
+alias gd="git diff"
+alias gcb="git checkout -b"
+alias gco="git branch --remote --merged | grep origin | grep -v '>' | grep -v master | grep -v develop | xargs -L1 | cut -d'/' -f2- | xargs git push origin --delete;"
+alias gpullpt="git pull origin integration"
+
+function gcm() {
+  git_branch_name=$(git branch | grep master 2> /dev/null)
+  if [ $git_branch_name == "  master" || $git_branch_name == "* master" ] ;
+  then
+    git checkout master
+  else
+    git checkout main
+  fi
+}
+
+function gpull() {
+  git_branch_name=$(git branch | grep master 2> /dev/null)
+  if [[ ($git_branch_name == "  master") || ($git_branch_name == "* master") ]] ;
+  then
+    git pull upstream master
+  else
+    git pull upstream main
+  fi
+}
+
+function gpullr() {
+  git_branch_name=$(git branch | grep master 2> /dev/null)
+  if [[ ($git_branch_name == "  master") || ($git_branch_name == "* master") ]] ;
+  then
+    git pull --rebase upstream master
+  else
+    git pull --rebase upstream main
+  fi
+}
+
+function gsync() {
+  git_branch_name=$(git branch | grep master 2> /dev/null)
+  if [[ $git_branch_name == "  master" || $git_branch_name == "* master" ]] ;
+  then
+    git checkout master
+    git pull --rebase upstream master
+		git fetch upstream
+		git merge upstream/master
+		git push origin master
+  else
+    git checkout main
+    git pull --rebase upstream main
+    git fetch upstream
+		git merge upstream/main
+		git push origin main
+  fi
+}
+
+###############################################################
